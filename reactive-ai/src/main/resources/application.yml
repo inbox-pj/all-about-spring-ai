@@ -1,0 +1,94 @@
+# Configuration for the server
+server:
+  port: 8080  # The port on which the application will run
+
+# Spring application configuration
+spring:
+  application:
+    name: reactive-spring-ai  # Name of the Spring Boot application
+
+  # AI-related configurations
+  ai:
+    model:
+      chat: ollama  # Specifies the chat model to use
+
+    ollama:
+      base-url: http://localhost:11434  # Base URL for the Ollama service
+      chat:
+        options:
+          temperature: 0.0  # Controls randomness in chat responses
+          top-k: 4  # Limits the number of highest probability tokens considered
+          max-tokens: 2048  # Maximum number of tokens in the response
+          model: llama3.2:latest  # Specifies the chat model version
+      embedding:
+        options:
+          top-k: 4  # Limits the number of highest probability tokens for embeddings
+          model: nomic-embed-text:latest  # Specifies the embedding model version
+
+    chat:
+      client:
+        enabled: false  # Enables or disables the chat client
+      memory:
+        repository:
+          jdbc:
+            schema: classpath:/db/migration/schema-h2db.sql  # Path to the schema file for the in-memory database
+            initialize-schema: always  # Ensures the schema is initialized on startup
+
+    vectorstore:
+      qdrant:
+        initialize-schema: true  # Whether to initialize the schema in Qdrant
+        use-tls: false  # Whether to use TLS for Qdrant connections
+        host: localhost  # Hostname for the Qdrant server
+        port: 6334  # Port for the Qdrant gRPC service
+        collection-name: documents  # Name of the collection in Qdrant
+
+    mcp:
+      client:
+        stdio:
+          servers-configuration: classpath:/mcp/mcp-servers.json  # Path to the MCP servers configuration file
+        sse:
+          connections:
+            mcp-server-sse:
+              url: http://localhost:8090  # URL for the MCP server SSE connection
+        enabled: true
+
+
+  # Datasource configuration for the in-memory H2 database
+  datasource:
+    url: jdbc:h2:mem:chatmemory  # JDBC URL for the H2 database
+    driver-class-name: org.h2.Driver  # Driver class for H2
+    username: sa  # Username for the database
+    password: password  # Password for the database
+
+  # Docker Compose configuration
+  docker:
+    compose:
+      file: compose.yml  # Path to the Docker Compose file
+      stop:
+        command: down  # Command to stop the Docker Compose services
+
+# Management endpoint configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus  # Exclude certain management endpoints from being exposed
+  tracing:
+    sampling:
+      probability: 1.0  # Sampling probability for tracing
+
+# Logging configuration
+logging:
+  pattern:
+    console: "%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n"  # Console log format
+  level:
+    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: DEBUG  # Log level for SimpleLoggerAdvisor
+    org.springframework.ai: INFO  # Log level for Spring AI components
+    com.cardconnect.ai.advisors: DEBUG  # Log level for custom advisors
+
+
+opentelemetry:
+  exporter:
+    otlp:
+      endpoint: http://localhost:4317
+

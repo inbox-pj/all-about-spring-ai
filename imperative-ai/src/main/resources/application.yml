@@ -1,0 +1,36 @@
+# Configuration for the server
+server:
+  port: 9080  # The port on which the application will run
+
+# Spring application configuration
+spring:
+  application:
+    name: imperative-spring-ai  # Name of the Spring Boot application
+
+  # AI-related configurations
+  ai:
+    model:
+      chat: ollama  # Specifies the chat model to use
+
+    ollama:
+      base-url: http://localhost:11434  # Base URL for the Ollama service
+      chat:
+        options:
+          temperature: 0.0  # Controls randomness in chat responses
+          top-k: 4  # Limits the number of highest probability tokens considered
+          max-tokens: 2048  # Maximum number of tokens in the response
+          model: llama3.2:latest  # Specifies the chat model version
+
+    chat:
+      client:
+        enabled: false  # Enables or disables the chat client ChatClient.Builder autoconfiguration
+
+
+# Logging configuration
+logging:
+  pattern:
+    console: "%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n"  # Console log format
+  level:
+    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: DEBUG  # Log level for SimpleLoggerAdvisor
+    org.springframework.ai: INFO  # Log level for Spring AI components
+

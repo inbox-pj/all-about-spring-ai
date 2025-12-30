@@ -20,7 +20,8 @@
     </properties>
 
     <modules>
-        <module>ai</module>
+        <module>reactive-ai</module>
+        <module>imperative-ai</module>
         <module>mcp-server-stdio</module>
         <module>mcp-server-sse</module>
     </modules>
